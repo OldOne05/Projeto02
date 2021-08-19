@@ -3,6 +3,8 @@ const app = express();
 
 const port = 3000;
 
+app.use(express.json());
+
 const games = [
     'GTA',
     'Ragnarok',
@@ -45,19 +47,40 @@ app.get("/jogos",(req, res) => {
 
 app.get("/jogos/:id", (req, res) => {
     const id = req.params.id -1;
-    const game = games[id];
-    if (id > games.length -1 || id < 0){
-        res.send("ID inválido, insira outro.");
-    }else {
-        res.send(game);
+    const jogo = games[id];
+    if (!jogo) {
+        res.send("Jogo não encontrado.");
+    } else{
+        res.send(jogo);
     };
 });
 
-games.forEach(function (item, indice){
-    console.log(item, indice);
+app.post("/jogos", (req, res) => {
+    const jogo = req.body.jogo;
+    const id = games.lenght +1;
+    games.push(jogo)
+
+    res.send(`Jogo adicionado: ${jogo}.
+    Seu ID é: ${id}.`)
+})
+
+app.put("/jogos/:id", (req, res) => {
+    const id = req.params.id -1;
+    const jogo = req.body.jogo;
+    const nomeAnterior = games[id];
+    games[id] = jogo;
+    res.send(`Jogo anterior: ${nomeAnterior}, atualizado com sucesso para: ${jogo}.`)
 });
 
-console.log(games.length);
+app.delete("/jogos/:id", (req, res) => {
+    const id = req.params.id -1;
+    const jogo = games[id];
+    if(!jogo) {
+        res.send("Jogo não encontrado.");
+    }
+    delete games[id];
+    res.send("Jogo excluído");
+});
 
 app.listen(port, () => {
     console.info(`App esta rodando em: http://localhost:${port}/`);
